@@ -7,9 +7,12 @@ import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class LaureLogger {
     private static final LaureLogger instance = new LaureLogger();
@@ -63,6 +66,33 @@ public class LaureLogger {
             Toast.makeText(unityActivity.getApplicationContext(), "Failed to Write To File: " + fileName, Toast.LENGTH_SHORT).show();
             throw new RuntimeException(e);
         }
+    }
+
+    public String ReadFromFile()
+    {
+        File path = unityActivity.getExternalFilesDir(null);
+        String text = "";
+        try
+        {
+            FileInputStream inputStream = new FileInputStream(new File(path, fileName));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String dataLine ="";
+            while((dataLine = reader.readLine())!= null) {
+                text += dataLine;
+                text += '\n';
+            }
+
+            reader.close();
+            SendLog("Read Succeded From" + path.getPath());
+            Toast.makeText(unityActivity.getApplicationContext(), "Read From File: " + fileName, Toast.LENGTH_SHORT).show();
+        }
+        catch (IOException e)
+        {
+            SendLog("Failed To Read");
+            Toast.makeText(unityActivity.getApplicationContext(), "Failed to Read From File: " + fileName, Toast.LENGTH_SHORT).show();
+            throw new RuntimeException(e);
+        }
+        return text;
     }
 
     public void ShowAlert() {
